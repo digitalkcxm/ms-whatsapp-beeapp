@@ -1,11 +1,11 @@
-import "dotenv/config";
+import 'dotenv/config'
 
-import { startServer } from "./api/config/server.js";
-import { startConsumersQueues } from "./api/config/consumersqueues.js";
-import AppVariables from "./api/config/appVariables.js";
+import { startServer } from './api/config/server.js'
+import { startConsumersQueues } from './api/config/consumersqueues.js'
+import AppVariables from './api/config/AppVariables.js'
 
-AppVariables.loadConfig();
+AppVariables.loadConfig()
 
-startConsumersQueues();
+startConsumersQueues()
 
-startServer();
+startServer()
