@@ -1,0 +1,12 @@
+package-lock.json
+
+node_modules
+__test__/coverage
+
+.env
+.env.local
+.env.prod
+.env.homol
+.env.old
+
+.DS_Store
