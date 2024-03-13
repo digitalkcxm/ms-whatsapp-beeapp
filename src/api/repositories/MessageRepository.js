@@ -1,9 +1,9 @@
-import Message from "../../core/domain/Message.js";
+import Message from '../../core/domain/Message.js'
 
 export default class MessageRepository {
   constructor(database = {}, logger = console) {
-    this.database = database;
-    this.logger = logger;
+    this.database = database
+    this.logger = logger
   }
 
   async createMessage(message = new Message()) {
@@ -19,25 +19,26 @@ export default class MessageRepository {
       status: message.status,
       error_reason: message.errorReason,
       source: message.source,
-    };
-    const result = await this.database("messages").insert(newMessage).returning("*");
+      broker_created_at: message.brokerCreatedAt
+    }
+    const result = await this.database('messages').insert(newMessage).returning('*')
 
-    return Message.fromDatabase(result[0]);
+    return Message.fromDatabase(result[0])
   }
 
-  async updateMessage(id = "", message = new Message()) {
+  async updateMessage(id = '', message = new Message()) {
     const updatedMessage = {
       status: message.status,
-      error_reason: message.errorReason,
-    };
-    const result = await this.database("messages").where({ id }).update(updatedMessage).returning("*");
+      error_reason: message.errorReason
+    }
+    const result = await this.database('messages').where({ id }).update(updatedMessage).returning('*')
 
-    return Message.fromDatabase(result[0]);
+    return Message.fromDatabase(result[0])
   }
 
   async findByWhatsappIdAndCompanySettingsId(messageWhatsappId, companySettingsId) {
-    const result = await this.database("messages").where({ id_message_whatsapp: messageWhatsappId, id_company_settings: companySettingsId }).first();
+    const result = await this.database('messages').where({ id_message_whatsapp: messageWhatsappId, id_company_settings: companySettingsId }).first()
 
-    return Message.fromDatabase(result);
+    return Message.fromDatabase(result)
   }
 }
