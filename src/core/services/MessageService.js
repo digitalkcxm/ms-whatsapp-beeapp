@@ -3,9 +3,10 @@ import ProtocolService from './ProtocolService.js'
 
 import { format } from 'date-fns'
 import mime from 'mime-types'
+import WhatsappInstanceService from './WhatsappInstanceService.js'
 
 export default class MessageService {
-  constructor(logger, messageRepo = {}, protocolRepo = {}, brokerIntegration = {}, coreIntegration = {}, downloaderFile = {}, s3Integration = {}) {
+  constructor(logger, messageRepo = {}, protocolRepo = {}, brokerIntegration = {}, coreIntegration = {}, downloaderFile = {}, s3Integration = {}, whatsappInstanceRepo = {}) {
     this.logger = logger
     this.messageRepo = messageRepo
     this.brokerIntegration = brokerIntegration
@@ -13,16 +14,17 @@ export default class MessageService {
     this.s3Integration = s3Integration
 
     this.protocolService = new ProtocolService(protocolRepo)
+    this.whatsappInstanceService = new WhatsappInstanceService(logger, whatsappInstanceRepo)
     this.coreIntegration = coreIntegration
   }
 
-  async createOutgoingMessage(input = {}, companySettings = {}, instance = {}) {
+  async createOutgoingMessage(input = {}, companySettings = {}) {
     const protocol = await this.protocolService.getProtocolById(input.protocol_id, companySettings)
     if (!protocol) {
       throw new Error('protocol não existe')
     }
 
-    console.log('input', input)
+    const instance = await this.whatsappInstanceService.findByIdAndCompanySettings(protocol.instanceId, companySettings)
 
     const message = Message.newOutgoing(companySettings.id, instance.id, protocol.id, input.message_core_id, input.content, input.type, input.content_type)
 
