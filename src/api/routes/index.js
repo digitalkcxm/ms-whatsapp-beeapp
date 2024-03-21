@@ -5,6 +5,7 @@ import healthRoutes from './health.js'
 import messageRoutes from './messages.js'
 import protocolRoutes from './protocols.js'
 import whatsappInstanceRoutes from './whatsappInstances.js'
+import configRoutes from './config.js'
 
 export default function routes(app, httpClient, database, logger = console) {
   app.use('/api/v1/health', healthRoutes(axios), errorHandler)
@@ -12,4 +13,5 @@ export default function routes(app, httpClient, database, logger = console) {
   app.use('/api/v1/whatsapp-instances', whatsappInstanceRoutes(database, logger), errorHandler)
   app.use('/api/v1/protocols', protocolRoutes(database, logger), errorHandler)
   app.use('/api/v1/messages', messageRoutes(database, logger), errorHandler)
+  app.use('/api/v1/configs', configRoutes(database, logger), errorHandler)
 }

@@ -5,21 +5,20 @@ import DownloaderFile from '../helpers/DownloaderFile.js'
 import S3Integration from '../integration/S3Integration.js'
 
 export default class MessageController {
-  constructor(logger = console, messageRepo = {}, protocolRepo = {}, whatsappInstanceRepo = {}, companySettingsRepo = {}, brokerIntegration = {}, coreIntegration = {}, companyIntegration = {}) {
+  constructor(logger = console, messageRepo = {}, protocolRepo = {}, whatsappInstanceRepo = {}, companySettingsRepo = {}, brokerIntegration = {}, coreIntegration = {}, companyIntegration = {}, queueIntegration = {}) {
     this.logger = logger
 
     this.companySettingsRepo = companySettingsRepo
     this.whatsappInstanceService = new WhatsappInstanceService(logger, whatsappInstanceRepo)
 
-    this.messageService = new MessageService(logger, messageRepo, protocolRepo, brokerIntegration, coreIntegration, DownloaderFile.newInstance(), S3Integration.newInstance())
+    this.messageService = new MessageService(logger, messageRepo, protocolRepo, brokerIntegration, coreIntegration, DownloaderFile.newInstance(), S3Integration.newInstance(), whatsappInstanceRepo)
     this.companyIntegration = companyIntegration
+    this.queueIntegration = queueIntegration
   }
 
   async createOutgoingMessage(body, company = {}, companySettings = {}) {
     try {
-      const instance = await this.whatsappInstanceService.findByToken(body.instance_token)
-
-      const message = await this.messageService.createOutgoingMessage(body, companySettings, instance)
+      const message = await this.messageService.createOutgoingMessage(body, companySettings)
 
       return { send: true, message }
     } catch (err) {
@@ -59,6 +58,7 @@ export default class MessageController {
   }
 
   async queue() {
+    let data
     try {
       const ch = await RabbitMQ.newChannel()
 
@@ -70,8 +70,7 @@ export default class MessageController {
       ch.consume(
         queueName,
         async (msg) => {
-          const data = JSON.parse(msg.content.toString())
-          console.log('data', data)
+          data = JSON.parse(msg.content.toString())
 
           if (data.event === 'send_message') {
             const companySettings = await this.companySettingsRepo.findByToken(data.company_token)
@@ -92,14 +91,16 @@ export default class MessageController {
             if (result.send) {
               ch.ack(msg)
             } else {
-              ch.reject(msg)
+              this.queueIntegration.sendToQueue(data, 'mswhatsappbeeapp:events:dead_letter')
+              ch.ack(msg)
             }
           }
         },
         { noAck: false }
       )
     } catch (err) {
-      this.logger.error({ err }, 'Error on queue')
+      this.logger.error({ err, data }, 'Error on queue')
+
       return err
     }
   }
