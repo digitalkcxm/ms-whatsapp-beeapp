@@ -137,6 +137,10 @@ export default class MessageService {
         text
       }
       contentType = 'IMAGE'
+    } else if (input.data.messageType === 'extendedTextMessage') {
+      content = {
+        text: input.data.message.extendedTextMessage.text
+      }
     } else {
       content = {
         text: input.data.message.conversation
@@ -155,6 +159,9 @@ export default class MessageService {
   }
 
   async handleMessageEvent(input = {}, companySettings = {}, instance = {}, company = {}) {
+    if (!input.data?.id && !input.data?.key?.id) {
+      return
+    }
     const messageWhatsappId = input.data?.id ? input.data.id : input.data.key.id
 
     const message = await this.messageRepo.findByWhatsappIdAndCompanySettingsId(messageWhatsappId, companySettings.id)
