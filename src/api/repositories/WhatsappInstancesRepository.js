@@ -30,7 +30,7 @@ export default class WhatsappInstanceRepository {
   }
 
   async findByAPIKey(apiKey = '') {
-    const instance = await this.database('instances').where({ api_key: apiKey }).first()
+    const instance = await this.database('instances').select('instances.*', 'configs.start_department_id').where({ 'instances.api_key': apiKey }).leftJoin('configs', 'instances.id_config', 'configs.id').first()
     if (!instance) {
       throw new Error('Instance não existe')
     }
