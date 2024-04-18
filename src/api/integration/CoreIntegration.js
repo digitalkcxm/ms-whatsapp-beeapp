@@ -14,7 +14,7 @@ export default class CoreIntegration {
         id: message.id,
         instance: {
           token: instance.token,
-          start_department_id: 1
+          start_department_id: instance.start_department_id
         },
         chat: {
           id: protocol.id,
