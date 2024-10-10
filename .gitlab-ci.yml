@@ -7,7 +7,7 @@ stages:
   - check_prod
 
 variables:
-  WEBHOOK_URL: "https://discord.com/api/webhooks/1072308956535463976/nSlzRWXytHn4kRyL6OxmCuMVD8NRRmiDVXxFDGKVhByuM2EneHovUbd8UjWEhVDZxix9"
+  WEBHOOK_URL: "https://discord.com/api/webhooks/1072308956535463976/nSlzRWXytHn4kRyL6OxmCuMVD8NRRmiDVXxFDGKVhByuM2EneHovUbd8UjWEhVDZxix9" 
 
 integration:
   stage: test
@@ -53,7 +53,7 @@ integration:
           $WEBHOOK_URL
 
       fi 
-          
+      
   only:
     - develop
   tags:
@@ -145,7 +145,7 @@ build_homol:
     - integration
     - quality
   tags:
-    - microservicos
+    - microservicos 
 
 deploy_homol:
   stage: deploy_homol
@@ -209,8 +209,8 @@ deploy_homol:
           -d '{"embeds": [{"title": "'${CI_JOB_NAME}'","description": "'${CI_JOB_STATUS}' - Ao executar o job '${CI_JOB_NAME}' do projeto '${CI_PROJECT_NAME}'","color": 12389167}]}' \
           $WEBHOOK_URL
 
-      fi 
 
+      fi 
   only:
    - develop
   allow_failure: false
@@ -220,7 +220,6 @@ deploy_homol:
     - build_homol
   tags:
     - microservicos   
-
 
 create-release:
   image: node:20.10.0
@@ -327,18 +326,17 @@ deploy_prod:
 
   only:
     - master
-  when: manual
-  allow_failure: false
   needs: 
     - create-release
   dependencies:
-    - create-release  
+    - create-release    
+  allow_failure: false
   tags:
     - microservicos
 
 check_prod:
   stage: check_prod
-  image: node
+  image: ubuntu:20.04
   before_script:
     - apt update > /dev/null 2>&1 
     - apt install dos2unix python3 python3-pip jq git unzip zip curl bash openssl wget rsync -y > /dev/null 2>&1
@@ -396,7 +394,7 @@ check_prod:
   allow_failure: false
   needs: ["deploy_prod"]
   tags:
-    - microservicos  
+    - microservicos
 
 deploy_ld:
   stage: prod
@@ -451,22 +449,21 @@ deploy_ld:
           -d '{"embeds": [{"title": "'${CI_JOB_NAME}'","description": "'${CI_JOB_STATUS}' - Ao executar o job '${CI_JOB_NAME}' do projeto '${CI_PROJECT_NAME}'","color": 12389167}]}' \
           $WEBHOOK_URL
 
-      fi 
 
+      fi 
   only:
     - master
-  when: manual
   needs: 
     - create-release
   dependencies:
-    - create-release   
+    - create-release    
   allow_failure: false
   tags:
-    - microservicos  
+    - microservicos
 
 check_ld:
   stage: check_prod
-  image: node
+  image: ubuntu:20.04
   before_script:
     - apt update > /dev/null 2>&1 
     - apt install dos2unix python3 python3-pip jq git unzip zip curl bash openssl wget rsync -y > /dev/null 2>&1
@@ -524,7 +521,7 @@ check_ld:
   allow_failure: false
   needs: ["deploy_ld"]
   tags:
-    - microservicos 
+    - microservicos
 
 deploy_syscob:
   stage: prod
@@ -579,22 +576,21 @@ deploy_syscob:
           -d '{"embeds": [{"title": "'${CI_JOB_NAME}'","description": "'${CI_JOB_STATUS}' - Ao executar o job '${CI_JOB_NAME}' do projeto '${CI_PROJECT_NAME}'","color": 12389167}]}' \
           $WEBHOOK_URL
 
-      fi 
 
+      fi 
   only:
     - master
-  when: manual
   needs: 
     - create-release
   dependencies:
-    - create-release   
+    - create-release    
   allow_failure: false
   tags:
-    - microservicos  
+    - microservicos
 
 check_syscob:
   stage: check_prod
-  image: node
+  image: ubuntu:20.04
   before_script:
     - apt update > /dev/null 2>&1 
     - apt install dos2unix python3 python3-pip jq git unzip zip curl bash openssl wget rsync -y > /dev/null 2>&1
@@ -653,6 +649,4 @@ check_syscob:
   needs: ["deploy_syscob"]
   tags:
     - microservicos
-
-
-
+        
