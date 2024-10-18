@@ -42,7 +42,9 @@ export default class ProtocolService {
 
   async _getInstance(instances = {}) {
     const remoteInstances = await this.brokerIntegration.findAllInstances()
-    const instanceFiltered = instances.filter((i) => remoteInstances.find((ri) => ri.instance.apikey === i.api_key && ri.instance.status === 'open'))
+
+    const instanceFiltered = instances.filter((i) => remoteInstances.find((ri) => i?.name === ri?.name))
+    
     if (!instanceFiltered) {
       throw new Error('Não existe instância disponível')
     }
