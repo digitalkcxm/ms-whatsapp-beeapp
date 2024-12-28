@@ -1,6 +1,6 @@
 {
-  "name": "mswhatsappbeeapp",
-  "version": "1.0.0",
+  "name": "ms-whatsapp-beeapp",
+  "version": "0.1.0",
   "description": "MS for integration with Whatsapp Beeapp",
   "main": "src/index.js",
   "type": "module",
@@ -8,6 +8,7 @@
     "test": "jest --passWithNoTests",
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "start:prod": "node src/index.js",
     "migrate:latest": "./node_modules/.bin/run.env ./node_modules/.bin/knex migrate:latest"
   },
   "author": "Silas Silva <silas.silva@digitalk.com.br>",
